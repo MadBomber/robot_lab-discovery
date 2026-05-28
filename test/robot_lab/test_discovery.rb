@@ -23,9 +23,45 @@ class TestDiscovery < Minitest::Test
   end
 
   def test_find_delegates_to_browser
-    result = RobotLab::Discovery::Result.new(name: "test", hostname: "host.local", port: 9292, path: "/test")
+    result = RobotLab::Discovery::Result.new(
+      name: "test", hostname: "host.local", port: 9292, path: "/test", capabilities: []
+    )
     RobotLab::Discovery::Browser.stub(:find, result) do
       assert_equal result, RobotLab::Discovery.find("test")
     end
+  end
+
+  def test_find_by_capability_delegates_to_browser
+    results = []
+    RobotLab::Discovery::Browser.stub(:find_by_capability, results) do
+      assert_equal results, RobotLab::Discovery.find_by_capability("research")
+    end
+  end
+
+  def test_list_capabilities_delegates_to_browser
+    caps = %w[analysis research]
+    RobotLab::Discovery::Browser.stub(:list_capabilities, caps) do
+      assert_equal caps, RobotLab::Discovery.list_capabilities
+    end
+  end
+
+  def test_dns_label_downcases
+    assert_equal "research", RobotLab::Discovery.dns_label("Research")
+  end
+
+  def test_dns_label_replaces_spaces_with_hyphens
+    assert_equal "web-search", RobotLab::Discovery.dns_label("Web Search")
+  end
+
+  def test_dns_label_replaces_special_chars
+    assert_equal "nlp-analysis", RobotLab::Discovery.dns_label("NLP/Analysis")
+  end
+
+  def test_dns_label_collapses_multiple_separators
+    assert_equal "a-b", RobotLab::Discovery.dns_label("a  /  b")
+  end
+
+  def test_dns_label_strips_leading_trailing_hyphens
+    assert_equal "foo", RobotLab::Discovery.dns_label("-foo-")
   end
 end

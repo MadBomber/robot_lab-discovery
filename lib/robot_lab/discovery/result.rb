@@ -2,7 +2,7 @@
 
 module RobotLab
   module Discovery
-    Result = Data.define(:name, :hostname, :port, :path) do
+    Result = Data.define(:name, :hostname, :port, :path, :capabilities) do
       def url = "http://#{hostname}:#{port}#{path}"
     end
   end

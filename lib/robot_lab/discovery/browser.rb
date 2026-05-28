@@ -22,6 +22,21 @@ module RobotLab
         end
       end
 
+      def self.find_by_capability(capability, timeout: 3)
+        label   = RobotLab::Discovery.dns_label(capability)
+        subtype = "_#{label}._sub.#{SERVICE_TYPE}"
+        ZeroConf.browse(subtype, timeout:)
+          .filter_map { |r| parse_response(r) }
+          .uniq(&:name)
+      end
+
+      def self.list_capabilities(timeout: 3)
+        browse(timeout:)
+          .flat_map(&:capabilities)
+          .uniq
+          .sort
+      end
+
       def self.parse_response(response)
         instance_name = nil
         hostname      = nil
@@ -40,7 +55,13 @@ module RobotLab
         end
 
         return nil unless instance_name && hostname && port && txt[:path]
-        Result.new(name: instance_name, hostname:, port:, path: txt[:path])
+        Result.new(
+          name:         instance_name,
+          hostname:,
+          port:,
+          path:         txt[:path],
+          capabilities: txt.fetch(:capabilities, [])
+        )
       end
       private_class_method :parse_response
     end

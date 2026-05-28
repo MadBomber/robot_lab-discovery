@@ -4,16 +4,23 @@
 # Usage: bundle exec ruby examples/01_basic_usage.rb
 #
 # Demonstrates the complete lifecycle of robot service discovery on a local
-# network using mDNS (Bonjour/Avahi):
+# network using multicast DNS (mDNS / RFC 6762):
 #
-#   Register  — Advertiser announces two robots under the _robot-lab._tcp.local.
-#               service type, encoding each robot's HTTP path in its TXT record.
+#   Register  — Advertiser announces robots under _robot-lab._tcp.local.,
+#               encoding each robot's HTTP path and capability taxonomy in its
+#               TXT record and as DNS-SD subtypes.
 #
-#   Browse    — Discovery.browse() listens for mDNS responses and returns a
-#               Result for every robot it finds.
+#   Browse    — Discovery.browse() returns every robot on the LAN, with its
+#               name, hostname, port, path, capabilities, and url.
 #
-#   Inspect   — Each Result carries name, hostname, port, path, and a url()
-#               helper that assembles the A2A endpoint ready for a client.
+#   By name   — Discovery.find() targets a single robot by instance name.
+#
+#   By capability — Discovery.find_by_capability() browses a DNS-SD subtype
+#               (e.g. _research._sub._robot-lab._tcp.local.) and returns only
+#               robots that advertise that capability.
+#
+#   Inventory — Discovery.list_capabilities() collects every capability term
+#               advertised on the LAN and returns them sorted and deduped.
 #
 #   Unregister — Stopping an Advertiser sends an mDNS goodbye packet (TTL=0),
 #                removing the service from peers' caches immediately.
@@ -22,12 +29,12 @@
 #   A multicast-capable network interface (standard on any LAN).
 #   The zeroconf gem is pure Ruby — no Bonjour, Avahi, or system daemon needed.
 #
-# Note: both advertiser and browser run in the same process here for demo
+# Note: both advertisers and browser run in the same process here for demo
 # purposes. In production each robot's server process runs its own Advertiser.
 
 require_relative "common"
 
-ROBOT_PORT = 9292
+ROBOT_PORT     = 9292
 BROWSE_TIMEOUT = 3  # seconds to listen for mDNS responses
 
 # ---------------------------------------------------------------------------
@@ -36,19 +43,21 @@ BROWSE_TIMEOUT = 3  # seconds to listen for mDNS responses
 puts "=== Registering robots ==="
 
 robots = [
-  { name: "headline", path: "/headline" },
-  { name: "tags",     path: "/tags"     },
+  { name: "headline",      path: "/headline",      capabilities: ["writing", "research"]  },
+  { name: "tags",          path: "/tags",           capabilities: ["analysis"]             },
+  { name: "market-analyst",path: "/market-analyst", capabilities: ["research", "analysis"] },
 ]
 
 advertisers = robots.map do |r|
   adv = RobotLab::Discovery::Advertiser.new(
-    name:     r[:name],
-    port:     ROBOT_PORT,
-    path:     r[:path],
-    hostname: Socket.gethostname
+    name:         r[:name],
+    port:         ROBOT_PORT,
+    path:         r[:path],
+    hostname:     Socket.gethostname,
+    capabilities: r[:capabilities]
   )
   adv.start
-  puts "  [+] #{r[:name]} → #{adv.hostname}.local:#{ROBOT_PORT}#{r[:path]}"
+  puts "  [+] #{r[:name]} (#{r[:capabilities].join(", ")}) → #{adv.hostname}.local:#{ROBOT_PORT}#{r[:path]}"
   adv
 end
 
@@ -60,7 +69,7 @@ puts
 sleep 1
 
 # ---------------------------------------------------------------------------
-# 2. Browse the local network for registered robots
+# 2. Browse all robots on the local network
 # ---------------------------------------------------------------------------
 puts "=== Browsing local network (timeout: #{BROWSE_TIMEOUT}s) ==="
 
@@ -69,14 +78,16 @@ results = RobotLab::Discovery.browse(timeout: BROWSE_TIMEOUT)
 if results.empty?
   puts "  No robots found."
 else
-  puts "  Found #{results.size} robot(s):"
+  puts "  Found #{results.size} robot(s):\n\n"
   results.each do |r|
+    caps = r.capabilities.empty? ? "(none)" : r.capabilities.join(", ")
     puts <<~RESULT
-        Name     : #{r.name}
-        Hostname : #{r.hostname}
-        Port     : #{r.port}
-        Path     : #{r.path}
-        URL      : #{r.url}
+        Name         : #{r.name}
+        Hostname     : #{r.hostname}
+        Port         : #{r.port}
+        Path         : #{r.path}
+        Capabilities : #{caps}
+        URL          : #{r.url}
 
     RESULT
   end
@@ -91,7 +102,7 @@ result = RobotLab::Discovery.find("headline", timeout: BROWSE_TIMEOUT)
 
 if result
   puts "  Found: #{result.url}"
-  puts "  Ready to connect — pass result.url to your A2A client."
+  puts "  Capabilities: #{result.capabilities.join(", ")}"
 else
   puts "  'headline' not found within #{BROWSE_TIMEOUT}s."
 end
@@ -99,7 +110,38 @@ end
 puts
 
 # ---------------------------------------------------------------------------
-# 4. Unregister — send mDNS goodbye packets
+# 4. Find robots by capability
+# ---------------------------------------------------------------------------
+puts "=== Finding all 'research' robots ==="
+
+researchers = RobotLab::Discovery.find_by_capability("research", timeout: BROWSE_TIMEOUT)
+
+if researchers.empty?
+  puts "  No research robots found."
+else
+  puts "  Found #{researchers.size} research robot(s):"
+  researchers.each { |r| puts "    #{r.name} — #{r.url}" }
+end
+
+puts
+
+# ---------------------------------------------------------------------------
+# 5. List all capability types available on the LAN
+# ---------------------------------------------------------------------------
+puts "=== Available capability types ==="
+
+caps = RobotLab::Discovery.list_capabilities(timeout: BROWSE_TIMEOUT)
+
+if caps.empty?
+  puts "  None advertised."
+else
+  caps.each { |c| puts "    #{c}" }
+end
+
+puts
+
+# ---------------------------------------------------------------------------
+# 6. Unregister — send mDNS goodbye packets
 # ---------------------------------------------------------------------------
 puts "=== Unregistering robots ==="
 

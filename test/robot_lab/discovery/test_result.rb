@@ -5,10 +5,11 @@ require "test_helper"
 class TestResult < Minitest::Test
   def setup
     @result = RobotLab::Discovery::Result.new(
-      name:     "headline",
-      hostname: "my-server.local",
-      port:     9292,
-      path:     "/headline"
+      name:         "headline",
+      hostname:     "my-server.local",
+      port:         9292,
+      path:         "/headline",
+      capabilities: ["writing", "research"]
     )
   end
 
@@ -32,9 +33,21 @@ class TestResult < Minitest::Test
     assert_equal "/headline", @result.path
   end
 
+  def test_capabilities_accessible
+    assert_equal ["writing", "research"], @result.capabilities
+  end
+
+  def test_empty_capabilities
+    r = RobotLab::Discovery::Result.new(
+      name: "x", hostname: "h.local", port: 80, path: "/x", capabilities: []
+    )
+    assert_equal [], r.capabilities
+  end
+
   def test_equality_by_value
     other = RobotLab::Discovery::Result.new(
-      name: "headline", hostname: "my-server.local", port: 9292, path: "/headline"
+      name: "headline", hostname: "my-server.local", port: 9292,
+      path: "/headline", capabilities: ["writing", "research"]
     )
     assert_equal @result, other
   end
@@ -44,7 +57,9 @@ class TestResult < Minitest::Test
   end
 
   def test_url_with_nested_path
-    r = RobotLab::Discovery::Result.new(name: "x", hostname: "h.local", port: 80, path: "/a/b/c")
+    r = RobotLab::Discovery::Result.new(
+      name: "x", hostname: "h.local", port: 80, path: "/a/b/c", capabilities: []
+    )
     assert_equal "http://h.local:80/a/b/c", r.url
   end
 end
