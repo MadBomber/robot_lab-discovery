@@ -113,7 +113,10 @@ class TestBrowser < Minitest::Test
                         path: "/headline", capabilities: ["writing"])
 
     browsed_type = nil
-    ZeroConf.stub(:browse, ->(type, timeout: 3) { browsed_type = type; [msg] }) do
+    ZeroConf.stub(:browse, lambda { |type, **|
+      browsed_type = type
+      [msg]
+    }) do
       RobotLab::Discovery::Browser.find_by_capability("writing")
     end
 
@@ -125,7 +128,10 @@ class TestBrowser < Minitest::Test
                         path: "/x", capabilities: ["web-search"])
 
     browsed_type = nil
-    ZeroConf.stub(:browse, ->(type, timeout: 3) { browsed_type = type; [msg] }) do
+    ZeroConf.stub(:browse, lambda { |type, **|
+      browsed_type = type
+      [msg]
+    }) do
       RobotLab::Discovery::Browser.find_by_capability("Web Search")
     end
 
@@ -134,9 +140,9 @@ class TestBrowser < Minitest::Test
 
   def test_list_capabilities_collects_and_sorts
     msg1 = fake_response(instance_name: "a", hostname: "h.local", port: 9292,
-                         path: "/a", capabilities: ["writing", "research"])
+                         path: "/a", capabilities: %w[writing research])
     msg2 = fake_response(instance_name: "b", hostname: "h.local", port: 9292,
-                         path: "/b", capabilities: ["research", "analysis"])
+                         path: "/b", capabilities: %w[research analysis])
 
     ZeroConf.stub(:browse, [msg1, msg2]) do
       caps = RobotLab::Discovery::Browser.list_capabilities

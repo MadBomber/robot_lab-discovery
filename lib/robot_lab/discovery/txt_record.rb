@@ -28,7 +28,7 @@ module RobotLab
       def self.encode(path:, capabilities: [])
         record = [
           "#{PATH_KEY}=#{path}",
-          "#{VERSION_KEY}=#{VERSION}",
+          "#{VERSION_KEY}=#{VERSION}"
         ]
         record << "#{CAPABILITIES_KEY}=#{Array(capabilities).join(",")}" unless Array(capabilities).empty?
         validate!(record)
@@ -49,19 +49,18 @@ module RobotLab
 
       def self.validate!(strings)
         strings.each do |s|
-          if s.bytesize > MAX_STRING_BYTES
-            raise Error,
-              "TXT record string exceeds #{MAX_STRING_BYTES} bytes " \
-              "(#{s.bytesize} bytes): #{s[0, 40].inspect}#{"..." if s.length > 40}"
-          end
+          next unless s.bytesize > MAX_STRING_BYTES
+          raise Error,
+                "TXT record string exceeds #{MAX_STRING_BYTES} bytes " \
+                "(#{s.bytesize} bytes): #{s[0, 40].inspect}#{"..." if s.length > 40}"
         end
 
         # Wire size: each string occupies 1 length-prefix byte + its content.
         wire_size = strings.sum { |s| 1 + s.bytesize }
         if wire_size > MAX_TOTAL_BYTES
           raise Error,
-            "TXT record wire size exceeds #{MAX_TOTAL_BYTES} bytes (#{wire_size} bytes). " \
-            "Shorten path or reduce the number/length of capabilities."
+                "TXT record wire size exceeds #{MAX_TOTAL_BYTES} bytes (#{wire_size} bytes). " \
+                "Shorten path or reduce the number/length of capabilities."
         end
 
         strings

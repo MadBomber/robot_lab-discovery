@@ -9,7 +9,7 @@ class TestResult < Minitest::Test
       hostname:     "my-server.local",
       port:         9292,
       path:         "/headline",
-      capabilities: ["writing", "research"]
+      capabilities: %w[writing research]
     )
   end
 
@@ -34,7 +34,7 @@ class TestResult < Minitest::Test
   end
 
   def test_capabilities_accessible
-    assert_equal ["writing", "research"], @result.capabilities
+    assert_equal %w[writing research], @result.capabilities
   end
 
   def test_empty_capabilities
@@ -47,7 +47,7 @@ class TestResult < Minitest::Test
   def test_equality_by_value
     other = RobotLab::Discovery::Result.new(
       name: "headline", hostname: "my-server.local", port: 9292,
-      path: "/headline", capabilities: ["writing", "research"]
+      path: "/headline", capabilities: %w[writing research]
     )
     assert_equal @result, other
   end

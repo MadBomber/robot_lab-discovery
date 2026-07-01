@@ -14,7 +14,7 @@ class TestTxtRecord < Minitest::Test
   end
 
   def test_encode_includes_version_with_short_key
-    assert TXT.encode(path: "/headline").any? { |s| s.start_with?("v=") }
+    assert(TXT.encode(path: "/headline").any? { |s| s.start_with?("v=") })
   end
 
   def test_encode_returns_array
@@ -22,11 +22,11 @@ class TestTxtRecord < Minitest::Test
   end
 
   def test_encode_omits_capabilities_when_empty
-    refute TXT.encode(path: "/x").any? { |s| s.start_with?("c=") }
+    refute(TXT.encode(path: "/x").any? { |s| s.start_with?("c=") })
   end
 
   def test_encode_includes_capabilities_with_short_key
-    assert_includes TXT.encode(path: "/x", capabilities: ["research", "writing"]),
+    assert_includes TXT.encode(path: "/x", capabilities: %w[research writing]),
                     "c=research,writing"
   end
 
@@ -36,7 +36,7 @@ class TestTxtRecord < Minitest::Test
 
   def test_encode_does_not_use_long_keys
     record = TXT.encode(path: "/x", capabilities: ["research"])
-    refute record.any? { |s| s.start_with?("path=", "rl_version=", "capabilities=") }
+    refute(record.any? { |s| s.start_with?("path=", "rl_version=", "capabilities=") })
   end
 
   # ---------------------------------------------------------------------------
@@ -52,7 +52,7 @@ class TestTxtRecord < Minitest::Test
   end
 
   def test_decode_parses_capabilities_as_array
-    assert_equal ["research", "writing"],
+    assert_equal %w[research writing],
                  TXT.decode(["p=/x", "c=research,writing"])[:capabilities]
   end
 
@@ -79,10 +79,10 @@ class TestTxtRecord < Minitest::Test
   # ---------------------------------------------------------------------------
 
   def test_roundtrip_with_capabilities
-    original = TXT.encode(path: "/pipeline", capabilities: ["analysis", "coding"])
+    original = TXT.encode(path: "/pipeline", capabilities: %w[analysis coding])
     decoded  = TXT.decode(original)
     assert_equal "/pipeline",            decoded[:path]
-    assert_equal ["analysis", "coding"], decoded[:capabilities]
+    assert_equal %w[analysis coding], decoded[:capabilities]
   end
 
   # ---------------------------------------------------------------------------
@@ -91,16 +91,16 @@ class TestTxtRecord < Minitest::Test
 
   def test_validate_raises_when_path_string_exceeds_255_bytes
     # "p=" is 2 bytes, so path content must exceed 253 bytes to trigger.
-    long_path = "/#{("a" * 254)}"
+    long_path = "/#{"a" * 254}"
     err = assert_raises(RobotLab::Discovery::Error) { TXT.encode(path: long_path) }
     assert_match(/exceeds #{TXT::MAX_STRING_BYTES} bytes/, err.message)
   end
 
   def test_validate_passes_for_path_string_at_exactly_255_bytes
     # "p=" is 2 bytes; path content of 253 bytes → string is exactly 255 bytes.
-    path = "/#{("a" * 252)}"
+    path = "/#{"a" * 252}"
     assert_equal 255, "p=#{path}".bytesize
-    assert TXT.encode(path: path).any? { |s| s.start_with?("p=") }
+    assert(TXT.encode(path: path).any? { |s| s.start_with?("p=") })
   end
 
   def test_validate_raises_when_capabilities_string_exceeds_255_bytes
@@ -117,7 +117,7 @@ class TestTxtRecord < Minitest::Test
   end
 
   def test_validate_error_message_includes_byte_count
-    long_path = "/#{("b" * 254)}"
+    long_path = "/#{"b" * 254}"
     err = assert_raises(RobotLab::Discovery::Error) { TXT.encode(path: long_path) }
     assert_match(/\d+ bytes/, err.message)
   end

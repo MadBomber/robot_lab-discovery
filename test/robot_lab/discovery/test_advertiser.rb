@@ -9,7 +9,7 @@ class TestAdvertiser < Minitest::Test
       port:         9292,
       path:         "/headline",
       hostname:     "test-host",
-      capabilities: ["writing", "research"]
+      capabilities: %w[writing research]
     )
   end
 
@@ -30,7 +30,7 @@ class TestAdvertiser < Minitest::Test
   end
 
   def test_stores_capabilities_as_strings
-    assert_equal ["writing", "research"], @advertiser.capabilities
+    assert_equal %w[writing research], @advertiser.capabilities
   end
 
   def test_empty_capabilities_by_default
@@ -40,9 +40,9 @@ class TestAdvertiser < Minitest::Test
 
   def test_capabilities_coerced_to_strings
     a = RobotLab::Discovery::Advertiser.new(
-      name: "x", port: 9292, path: "/x", capabilities: [:research, :writing]
+      name: "x", port: 9292, path: "/x", capabilities: %i[research writing]
     )
-    assert_equal ["research", "writing"], a.capabilities
+    assert_equal %w[research writing], a.capabilities
   end
 
   def test_not_started_initially
