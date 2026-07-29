@@ -1,0 +1,1204 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Zero-configuration mDNS/DNS-SD robot discovery for the RobotLab LLM agent framework">
+      
+      
+        <meta name="author" content="Dewayne VanHoozer">
+      
+      
+        <link rel="canonical" href="https://madbomber.github.io/robot_lab-discovery/how_it_works/">
+      
+      
+        <link rel="prev" href="../getting_started/">
+      
+      
+        <link rel="next" href="../api_reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>How It Works - robot_lab-discovery</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-it-works" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="robot_lab-discovery" class="md-header__button md-logo" aria-label="robot_lab-discovery" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19.07 4.93-1.41 1.41A8.01 8.01 0 0 1 20 12a8 8 0 0 1-8 8 8 8 0 0 1-8-8c0-4.08 3.05-7.44 7-7.93v2.02C8.16 6.57 6 9.03 6 12a6 6 0 0 0 6 6 6 6 0 0 0 6-6c0-1.66-.67-3.16-1.76-4.24l-1.41 1.41C15.55 9.9 16 10.9 16 12a4 4 0 0 1-4 4 4 4 0 0 1-4-4c0-1.86 1.28-3.41 3-3.86v2.14c-.6.35-1 .98-1 1.72a2 2 0 0 0 2 2 2 2 0 0 0 2-2c0-.74-.4-1.38-1-1.72V2h-1A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10c0-2.76-1.12-5.26-2.93-7.07"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            robot_lab-discovery
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How It Works
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MadBomber/robot_lab-discovery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MadBomber/robot_lab-discovery
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting_started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  How It Works
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api_reference/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="robot_lab-discovery" class="md-nav__button md-logo" aria-label="robot_lab-discovery" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19.07 4.93-1.41 1.41A8.01 8.01 0 0 1 20 12a8 8 0 0 1-8 8 8 8 0 0 1-8-8c0-4.08 3.05-7.44 7-7.93v2.02C8.16 6.57 6 9.03 6 12a6 6 0 0 0 6 6 6 6 0 0 0 6-6c0-1.66-.67-3.16-1.76-4.24l-1.41 1.41C15.55 9.9 16 10.9 16 12a4 4 0 0 1-4 4 4 4 0 0 1-4-4c0-1.86 1.28-3.41 3-3.86v2.14c-.6.35-1 .98-1 1.72a2 2 0 0 0 2 2 2 2 0 0 0 2-2c0-.74-.4-1.38-1-1.72V2h-1A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10c0-2.76-1.12-5.26-2.93-7.07"/></svg>
+
+    </a>
+    robot_lab-discovery
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MadBomber/robot_lab-discovery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MadBomber/robot_lab-discovery
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How It Works
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How It Works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-mdnsdns-sd-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The mDNS/DNS-SD Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advertising-advertiser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advertising: Advertiser
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advertising: Advertiser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#subtypes-how-capability-browsing-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subtypes: How Capability Browsing Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-txt-record-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TXT Record Wire Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The TXT Record Wire Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#size-limits-and-why-they-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size Limits, and Why They Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovering-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovering: Browser
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovering: Browser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#browsetimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        browse(timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findname-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find(name, timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_by_capabilitycapability-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_by_capability(capability, timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_capabilitiestimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_capabilities(timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse_responseresponse-private" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_response(response) (private)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#robotlabdiscoveryresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RobotLab::Discovery::Result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dns_label
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capability Taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-constraints-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Constraints (and Why)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-mdnsdns-sd-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The mDNS/DNS-SD Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advertising-advertiser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advertising: Advertiser
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advertising: Advertiser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#subtypes-how-capability-browsing-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subtypes: How Capability Browsing Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-txt-record-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TXT Record Wire Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The TXT Record Wire Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#size-limits-and-why-they-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size Limits, and Why They Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovering-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovering: Browser
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovering: Browser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#browsetimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        browse(timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findname-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find(name, timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_by_capabilitycapability-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_by_capability(capability, timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_capabilitiestimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_capabilities(timeout:)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse_responseresponse-private" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_response(response) (private)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#robotlabdiscoveryresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RobotLab::Discovery::Result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dns_label
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capability Taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-constraints-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Constraints (and Why)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/MadBomber/robot_lab-discovery/edit/main/docs/how_it_works.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/MadBomber/robot_lab-discovery/raw/main/docs/how_it_works.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h1>
+<h2 id="the-mdnsdns-sd-model">The mDNS/DNS-SD Model<a class="headerlink" href="#the-mdnsdns-sd-model" title="Permanent link">&para;</a></h2>
+<p>This gem is a thin, purpose-built layer over two RFCs:</p>
+<ul>
+<li><strong>mDNS</strong> (<a href="https://www.rfc-editor.org/rfc/rfc6762">RFC 6762</a>) — DNS queries and responses sent over UDP multicast on the local subnet (<code>224.0.0.251:5353</code>), instead of to a unicast DNS server. Any host on the same LAN segment hears every query and response.</li>
+<li><strong>DNS-SD</strong> (<a href="https://www.rfc-editor.org/rfc/rfc6763">RFC 6763</a>) — a convention for naming <em>services</em> within DNS: a service type (<code>_robot-lab._tcp.local.</code>), an instance name, and a TXT record carrying arbitrary key/value metadata alongside the usual SRV record (which carries the target host and port).</li>
+</ul>
+<p><code>RobotLab::Discovery::Constants::SERVICE_TYPE</code> is <code>"_robot-lab._tcp.local."</code> — every robot advertised by this gem, regardless of name or capabilities, registers under that one DNS-SD service type. A browser listening for that type hears every robot on the LAN; capability-specific browsing (below) narrows that with DNS-SD <em>subtypes</em> instead of a second protocol.</p>
+<p>The <code>zeroconf</code> gem (this gem's only runtime dependency) implements both RFCs itself in pure Ruby over a raw UDP socket — there is no Bonjour/Avahi/system daemon involved and nothing to install beyond the gem itself.</p>
+<h2 id="advertising-advertiser">Advertising: <code>Advertiser</code><a class="headerlink" href="#advertising-advertiser" title="Permanent link">&para;</a></h2>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">adv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">RobotLab</span><span class="o">::</span><span class="no">Discovery</span><span class="o">::</span><span class="no">Advertiser</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:,</span><span class="w"> </span><span class="ss">port</span><span class="p">:,</span><span class="w"> </span><span class="ss">path</span><span class="p">:,</span><span class="w"> </span><span class="ss">hostname</span><span class="p">:</span><span class="w"> </span><span class="no">Socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">,</span><span class="w"> </span><span class="ss">capabilities</span><span class="p">:</span><span class="w"> </span><span class="o">[]</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">adv</span><span class="o">.</span><span class="n">start</span>
+</span></code></pre></div>
+<p><code>start</code> builds a <code>ZeroConf::Service</code> for <code>SERVICE_TYPE</code> with:</p>
+<ul>
+<li><code>instance_name:</code> — the <code>name:</code> you gave (becomes the DNS-SD instance name)</li>
+<li><code>text:</code> — the TXT record, built by <code>TxtRecord.encode(path:, capabilities:)</code> (see below)</li>
+<li><code>subtypes:</code> — one <code>"_#{dns_label(capability)}"</code> string per capability</li>
+</ul>
+<p>...then spawns <code>@service.start</code> on a background <code>Thread</code> and returns <code>self</code> immediately, so <code>start</code> never blocks the caller. <code>stop</code> calls <code>@service.stop</code> (which sends the mDNS <em>goodbye</em> packet — a response with TTL=0 telling every listening peer to drop this record from its cache right away) and then <code>@thread.join</code>, so by the time <code>stop</code> returns, the advertising thread has fully exited. <code>started?</code> reports <code>@thread&amp;.alive? || false</code>.</p>
+<h3 id="subtypes-how-capability-browsing-actually-works">Subtypes: How Capability Browsing Actually Works<a class="headerlink" href="#subtypes-how-capability-browsing-actually-works" title="Permanent link">&para;</a></h3>
+<p>DNS-SD subtypes are a real part of the spec, not something this gem invents: a service can register as belonging to <code>_robot-lab._tcp.local.</code> <strong>and</strong> to any number of <code>_&lt;subtype&gt;._sub._robot-lab._tcp.local.</code> names simultaneously. <code>Advertiser#start</code> registers one subtype per capability — a robot advertising <code>["writing", "research"]</code> shows up under:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>_robot-lab._tcp.local.                          (always)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>_writing._sub._robot-lab._tcp.local.
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>_research._sub._robot-lab._tcp.local.
+</span></code></pre></div>
+<p><code>Discovery.find_by_capability("research")</code> browses <code>_research._sub._robot-lab._tcp.local.</code> directly — the mDNS query itself only reaches robots registered under that subtype, so this is a real network-level filter, not a client-side filter over every robot's TXT record. <code>Discovery.browse</code>/<code>list_capabilities</code>, by contrast, browse the base <code>_robot-lab._tcp.local.</code> type and see every robot regardless of capability.</p>
+<h2 id="the-txt-record-wire-format">The TXT Record Wire Format<a class="headerlink" href="#the-txt-record-wire-format" title="Permanent link">&para;</a></h2>
+<p><code>TxtRecord</code> encodes three possible fields into the DNS TXT record, using single-character keys to conserve UDP packet space:</p>
+<table>
+<thead>
+<tr>
+<th>Wire key</th>
+<th>Meaning</th>
+<th>Long-form equivalent avoided</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p</code></td>
+<td><code>path</code></td>
+<td><code>path=</code> (saves 3 bytes)</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td><code>rl_version</code> (the gem's <code>VERSION</code> at encode time)</td>
+<td><code>rl_version=</code> (saves 9 bytes)</td>
+</tr>
+<tr>
+<td><code>c</code></td>
+<td><code>capabilities</code>, comma-joined</td>
+<td><code>capabilities=</code> (saves 11 bytes)</td>
+</tr>
+</tbody>
+</table>
+<p><code>encode(path:, capabilities: [])</code> always includes <code>p=</code> and <code>v=</code>; <code>c=</code> is omitted entirely when <code>capabilities</code> is empty (not encoded as <code>c=</code>). <code>decode(strings)</code> reverses this, splitting each <code>"key=value"</code> string on the <em>first</em> <code>=</code> only (so a path containing <code>=</code> round-trips correctly — <code>"p=/foo=bar"</code> decodes to <code>path: "/foo=bar"</code>), and silently ignores any key it doesn't recognize (forward-compatible with future fields). <code>capabilities</code> is only present in the decoded hash when a <code>c=</code> entry existed at all — <code>decode(["p=/x"])</code> returns a hash with no <code>:capabilities</code> key, not <code>capabilities: []</code>; <code>Browser#parse_response</code> is what supplies the <code>[]</code> default via <code>txt.fetch(:capabilities, [])</code> when building a <code>Result</code>.</p>
+<h3 id="size-limits-and-why-they-exist">Size Limits, and Why They Exist<a class="headerlink" href="#size-limits-and-why-they-exist" title="Permanent link">&para;</a></h3>
+<p>Two limits are enforced by <code>TxtRecord.validate!</code>, called from inside <code>encode</code>:</p>
+<ol>
+<li><strong>Per-string: 255 bytes</strong> (<code>MAX_STRING_BYTES</code>). This isn't a design choice — it's RFC 1035 §3.3.14: every string inside a TXT record is length-prefixed with a single byte, so no individual string can exceed 255 bytes no matter what. Since capabilities all share one <code>c=...</code> string, <code>MAX_CAPABILITIES_CONTENT</code> (<code>255 - "c".bytesize - "=".bytesize</code> = <strong>253</strong> bytes) is the real budget for however many comma-separated capability names you pack in.</li>
+<li><strong>Total wire size: 1300 bytes</strong> (<code>MAX_TOTAL_BYTES</code>). This one <em>is</em> a design choice, derived from the physical network: mDNS runs over UDP, and a standard Ethernet MTU (1500 bytes) minus IP/UDP/DNS header overhead leaves roughly 1472 bytes for the whole DNS payload. After the SRV and A/AAAA records that accompany every service announcement also claim space in that same packet, keeping the TXT record itself under 1300 bytes (wire size = 1 length-prefix byte + content bytes, summed across every string) leaves enough headroom that the whole announcement stays inside a single unfragmented UDP packet. <code>encode</code> alone can never actually reach this second limit — three strings, each capped at 255 bytes, tops out well under 1300 — so this check exists to protect callers who build TXT string arrays some other way and hand them to <code>validate!</code> directly, not a realistic failure mode of <code>encode</code> itself.</li>
+</ol>
+<p>Both violations raise <code>RobotLab::Discovery::Error</code> with a message naming the exact byte count, at <code>Advertiser#start</code> time (since that's when <code>TxtRecord.encode</code> runs) — not at <code>Advertiser.new</code> time, since <code>capabilities:</code> is only assigned, not encoded, in the constructor.</p>
+<h2 id="discovering-browser">Discovering: <code>Browser</code><a class="headerlink" href="#discovering-browser" title="Permanent link">&para;</a></h2>
+<p><code>Browser</code> is a module of class methods — there's no instance to hold, since browsing is stateless per call.</p>
+<h4 id="browsetimeout"><code>browse(timeout:)</code><a class="headerlink" href="#browsetimeout" title="Permanent link">&para;</a></h4>
+<p>Calls <code>ZeroConf.browse(SERVICE_TYPE, timeout:)</code>, which blocks for up to <code>timeout</code> seconds collecting raw mDNS responses, then maps each one through the private <code>parse_response</code> and drops any that come back <code>nil</code> (<code>filter_map</code>), then deduplicates by <code>name</code> (<code>uniq(&amp;:name)</code> — a robot that responds more than once during the browse window, which is normal for mDNS, only appears once in the result).</p>
+<h4 id="findname-timeout"><code>find(name, timeout:)</code><a class="headerlink" href="#findname-timeout" title="Permanent link">&para;</a></h4>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">deadline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">timeout</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kp">loop</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="n">remaining</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deadline</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kp">nil</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">remaining</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">browse</span><span class="p">(</span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">remaining</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">].</span><span class="n">min</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">r</span><span class="o">|</span><span class="w"> </span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">name</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">result</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">end</span>
+</span></code></pre></div>
+<p>This is a <strong>polling loop</strong>, not a single <code>browse</code> call with a longer timeout: it repeatedly calls <code>browse</code> in increments of at most 1 second (<code>[remaining, 1].min</code>), checking after each one whether the named robot showed up, until either it's found or the overall <code>timeout</code> has elapsed. The 1-second cap keeps each individual <code>browse</code> responsive rather than committing the whole remaining budget to one blocking call; the practical effect is that <code>find</code> can return as soon as the target robot answers, rather than always waiting out the full <code>timeout</code>.</p>
+<h4 id="find_by_capabilitycapability-timeout"><code>find_by_capability(capability, timeout:)</code><a class="headerlink" href="#find_by_capabilitycapability-timeout" title="Permanent link">&para;</a></h4>
+<p>Normalizes <code>capability</code> via <code>RobotLab::Discovery.dns_label</code>, browses <code>"_#{label}._sub.#{SERVICE_TYPE}"</code> — the DNS-SD subtype, not the base service type — and otherwise behaves exactly like <code>browse</code> (parse, filter, dedupe by name).</p>
+<h4 id="list_capabilitiestimeout"><code>list_capabilities(timeout:)</code><a class="headerlink" href="#list_capabilitiestimeout" title="Permanent link">&para;</a></h4>
+<p><code>browse(timeout:).flat_map(&amp;:capabilities).uniq.sort</code> — every capability string across every currently-visible robot, deduplicated and alphabetically sorted.</p>
+<h4 id="parse_responseresponse-private"><code>parse_response(response)</code> <em>(private)</em><a class="headerlink" href="#parse_responseresponse-private" title="Permanent link">&para;</a></h4>
+<p>Given a raw <code>Resolv::DNS::Message</code>-like response, walks <code>response.answer + response.additional</code> looking for an <code>SRV</code> record (supplies <code>port</code>, <code>hostname</code> — with the trailing <code>.</code> FQDN dot stripped — and the instance name, taken from the first label of the resource name) and a <code>TXT</code> record (decoded via <code>TxtRecord.decode</code>). If either the SRV data or a <code>path</code> from the TXT data is missing, it returns <code>nil</code> rather than raising — a malformed or partial mDNS response is simply skipped, not an error condition, which is why <code>browse</code> uses <code>filter_map</code> rather than <code>map</code>.</p>
+<h2 id="robotlabdiscoveryresult"><code>RobotLab::Discovery::Result</code><a class="headerlink" href="#robotlabdiscoveryresult" title="Permanent link">&para;</a></h2>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Data</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:hostname</span><span class="p">,</span><span class="w"> </span><span class="ss">:port</span><span class="p">,</span><span class="w"> </span><span class="ss">:path</span><span class="p">,</span><span class="w"> </span><span class="ss">:capabilities</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http://</span><span class="si">#{</span><span class="n">hostname</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">port</span><span class="si">}#{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">end</span>
+</span></code></pre></div>
+<p>An immutable value object (Ruby's <code>Data.define</code>, not a mutable <code>Struct</code> or hash) — every <code>Result</code> a <code>browse</code>/<code>find</code>/<code>find_by_capability</code> call returns is a fresh, frozen snapshot; there's no way to accidentally mutate one and have it silently affect a cache. <code>url</code> always assumes plain <code>http://</code> — this gem has no notion of TLS and doesn't encode a scheme in the TXT record; if a robot actually serves over HTTPS, build the URL yourself from the other fields rather than using <code>#url</code> directly.</p>
+<h2 id="dns_label"><code>dns_label</code><a class="headerlink" href="#dns_label" title="Permanent link">&para;</a></h2>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">dns_label</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="n">capability</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^a-z0-9]+/</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\A-+|-+\z/</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">end</span>
+</span></code></pre></div>
+<p>Downcases, collapses every run of non-alphanumeric characters to a single hyphen, then strips any leading/trailing hyphen left over. <code>"Web Search"</code> → <code>"web-search"</code>; <code>"NLP/Analysis"</code> → <code>"nlp-analysis"</code>; <code>"Web Search / NLP"</code> → <code>"web-search-nlp"</code> (the <code>/</code> and surrounding spaces all collapse into the hyphens already produced by the spaces around them). This is what turns a free-form capability string into something legal to use as a DNS label component in a subtype name — DNS labels can't contain arbitrary punctuation, spaces, or mixed case in a way every resolver treats consistently.</p>
+<h2 id="capability-taxonomy">Capability Taxonomy<a class="headerlink" href="#capability-taxonomy" title="Permanent link">&para;</a></h2>
+<p>Capabilities are entirely free-form strings — there is no enforced registry or fixed vocabulary anywhere in this gem. The convention (not an enforced rule) is short, lowercase, hyphen-separated terms describing <em>what</em> a robot does, not <em>how</em> it works internally — e.g. <code>research</code>, <code>analysis</code>, <code>writing</code>, <code>coding</code>, <code>vision</code>, <code>memory</code>, <code>tool-use</code>, <code>orchestration</code>, <code>web-search</code>, <code>summarisation</code>, <code>classification</code>. A robot can advertise any number of them; each becomes its own DNS-SD subtype (see above), so clients browsing by capability only ever hear from robots that actually advertise it — no client-side filtering of the full robot list is needed.</p>
+<h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
+<p><code>RobotLab::Discovery::Error</code> (a plain <code>StandardError</code> subclass) is raised in exactly one place in this gem: <code>TxtRecord.validate!</code>, when either the per-string or total wire-size limit is exceeded (see above). There's no other error class in the gem — <code>Advertiser</code>/<code>Browser</code> let any underlying <code>zeroconf</code>/<code>Resolv</code>/socket error propagate as-is rather than wrapping it.</p>
+<h2 id="key-constraints-and-why">Key Constraints (and Why)<a class="headerlink" href="#key-constraints-and-why" title="Permanent link">&para;</a></h2>
+<p>These follow directly from the mechanics above, not from arbitrary gem-level restrictions:</p>
+<ul>
+<li><strong>LAN-only, by protocol, not by choice.</strong> mDNS multicast packets don't cross routers (that's what makes them "local" — RFC 6762 explicitly scopes them to the local link). There is no configuration in this gem that extends reach beyond a single multicast subnet; a VPN, a different VLAN, or a cloud network boundary will not see these announcements at all.</li>
+<li><strong>Stale results after an ungraceful crash.</strong> <code>Advertiser#stop</code> sends an explicit goodbye packet that tells peers to evict the record immediately. A process that dies without calling <code>stop</code> (a kill -9, a crash) never sends that packet — its record simply sits in every peer's cache until that record's normal mDNS TTL expires on its own. <code>browse</code>/<code>find</code> have no way to distinguish "still running" from "crashed, TTL not yet expired" — a caller that needs liveness guarantees beyond "recently advertised" needs a mechanism this gem doesn't provide (e.g. an application-level heartbeat over whatever transport the discovered URL leads to).</li>
+<li><strong><code>find</code> blocks the calling thread.</strong> It's a real polling loop (see above), not instant — even a successful lookup can take up to ~1 second (one polling increment) after the robot actually answers, and an unsuccessful one blocks for the <em>entire</em> <code>timeout</code>. Never call it from a thread that has to stay responsive (a web request handler, an event loop's main thread) without moving it to a background thread or job yourself.</li>
+<li><strong>Capability content is capped by the RFC 1035 per-string limit</strong>, not an arbitrary choice this gem made — see <a href="#size-limits-and-why-they-exist">Size Limits</a> above for the exact numbers and where they come from.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../getting_started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting Started">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Getting Started
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../api_reference/" class="md-footer__link md-footer__link--next" aria-label="Next: API Reference">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                API Reference
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Dewayne VanHoozer
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/MadBomber/robot_lab-discovery" target="_blank" rel="noopener" title="robot_lab-discovery on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://rubygems.org/gems/robot_lab-discovery" target="_blank" rel="noopener" title="robot_lab-discovery on RubyGems" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M116.7 33.8c4.5-6.1 11.7-9.8 19.3-9.8h240c7.6 0 14.8 3.6 19.3 9.8l112 152c6.8 9.2 6.1 21.9-1.5 30.4l-232 256c-4.5 5-11 7.9-17.8 7.9s-13.2-2.9-17.8-7.9l-232-256c-7.7-8.5-8.3-21.2-1.5-30.4zm38.5 39.8c-3.3 2.5-4.2 7-2.1 10.5l57.4 95.7L63.3 192c-4.1.3-7.3 3.8-7.3 8s3.2 7.6 7.3 8l192 16h1.3l192-16c4.1-.3 7.3-3.8 7.3-8s-3.2-7.6-7.3-8l-147.2-12.3 57.4-95.6c2.1-3.5 1.2-8.1-2.1-10.5s-7.9-2-10.7 1l-90 97.6-90.1-97.6c-2.8-3-7.4-3.4-10.7-1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
