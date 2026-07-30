@@ -8,8 +8,8 @@ module RobotLab
     module Browser
       def self.browse(timeout: 3)
         ZeroConf.browse(SERVICE_TYPE, timeout:)
-          .filter_map { |r| parse_response(r) }
-          .uniq(&:name)
+                .filter_map { |r| parse_response(r) }
+                .uniq(&:name)
       end
 
       def self.find(name, timeout: 5)
@@ -26,8 +26,8 @@ module RobotLab
         label   = RobotLab::Discovery.dns_label(capability)
         subtype = "_#{label}._sub.#{SERVICE_TYPE}"
         ZeroConf.browse(subtype, timeout:)
-          .filter_map { |r| parse_response(r) }
-          .uniq(&:name)
+                .filter_map { |r| parse_response(r) }
+                .uniq(&:name)
       end
 
       def self.list_capabilities(timeout: 3)

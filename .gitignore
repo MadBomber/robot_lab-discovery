@@ -7,3 +7,5 @@
 /spec/reports/
 /tmp/
 Gemfile.lock
+Gemfile.local.lock
+*_output.txt

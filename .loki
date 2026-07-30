@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+# robot_lab-discovery — zeroconf/mDNS service discovery.
+
+import_up "repo_dev.loki"
+
+class Tasks
+  @@gem_name ||= "robot_lab-discovery".freeze
+
+  header "robot_lab-discovery v#{gem_version} — service discovery"
+end
