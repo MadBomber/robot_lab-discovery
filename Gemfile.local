@@ -5,6 +5,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in robot_lab-discovery.gemspec
 gemspec
 
+gem 'robot_lab', path: '../robot_lab'
+
 gem "irb"
 gem "rake", "~> 13.0"
 

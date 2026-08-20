@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "robot_lab", "~> 0.2"
   spec.add_dependency "zeroconf", "~> 1.0"
 
   # For more information and examples about making a new gem, check out our
