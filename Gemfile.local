@@ -13,6 +13,7 @@ gem "rake", "~> 13.0"
 group :development, :test do
   gem "flay"
   gem "flog"
+  gem "reek"
   gem "rubocop"
 end
 
