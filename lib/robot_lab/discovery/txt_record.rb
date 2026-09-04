@@ -49,10 +49,11 @@ module RobotLab
 
       def self.validate!(strings)
         strings.each do |s|
-          next unless s.bytesize > MAX_STRING_BYTES
+          size = s.bytesize
+          next unless size > MAX_STRING_BYTES
           raise Error,
                 "TXT record string exceeds #{MAX_STRING_BYTES} bytes " \
-                "(#{s.bytesize} bytes): #{s[0, 40].inspect}#{"..." if s.length > 40}"
+                "(#{size} bytes): #{s[0, 40].inspect}#{"..." if s.length > 40}"
         end
 
         # Wire size: each string occupies 1 length-prefix byte + its content.

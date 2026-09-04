@@ -37,6 +37,7 @@ module RobotLab
           .sort
       end
 
+      # :reek:TooManyStatements -- one scan over the DNS answers accumulating SRV/TXT fields; splitting would scatter the parse state.
       def self.parse_response(response)
         instance_name = nil
         hostname      = nil
