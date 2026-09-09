@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.2.8] - 2026-09-09
+
+Released in lockstep with `robot_lab` core v0.2.8: this gem now resolves the released core gem from RubyGems instead of the local sibling checkout (local-path development remains available via `BUNDLE_GEMFILE=Gemfile.local`). Version moves from 0.2.7.1 to 0.2.8 to rejoin the core lockstep. Also in this release: reek warnings triaged to zero, reek added to the development bundle, and gem lifecycle tasks moved to asgard.
+
 ## [0.1.0] - 2026-05-28
 
 ### Added
