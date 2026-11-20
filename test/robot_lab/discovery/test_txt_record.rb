@@ -103,13 +103,28 @@ class TestTxtRecord < Minitest::Test
     assert(TXT.encode(path: path).any? { |s| s.start_with?("p=") })
   end
 
-  def test_validate_raises_when_capabilities_string_exceeds_255_bytes
+  def test_encode_raises_when_capabilities_content_exceeds_limit
     # "c=" is 2 bytes; capability content must exceed 253 bytes.
     long_cap = "a" * 254
     err = assert_raises(RobotLab::Discovery::Error) do
       TXT.encode(path: "/x", capabilities: [long_cap])
     end
-    assert_match(/exceeds #{TXT::MAX_STRING_BYTES} bytes/, err.message)
+    assert_match(/capabilities exceed #{TXT::MAX_CAPABILITIES_CONTENT} bytes when comma-joined \(254 bytes\)/, err.message)
+  end
+
+  def test_encode_accepts_capabilities_content_at_exactly_the_limit
+    caps = ["a" * 126, "b" * 126] # 126 + 1 comma + 126 = 253 bytes
+    assert_equal 255, TXT.encode(path: "/x", capabilities: caps).last.bytesize
+  end
+
+  def test_validate_capabilities_content_returns_content_when_within_limit
+    content = "a" * TXT::MAX_CAPABILITIES_CONTENT
+    assert_same content, TXT.validate_capabilities_content!(content)
+  end
+
+  def test_validate_capabilities_content_counts_bytes_not_characters
+    content = "é" * 127 # 254 bytes, 127 characters
+    assert_raises(RobotLab::Discovery::Error) { TXT.validate_capabilities_content!(content) }
   end
 
   def test_max_capabilities_content_constant

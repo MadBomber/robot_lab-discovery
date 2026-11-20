@@ -6,11 +6,7 @@ require "zeroconf"
 module RobotLab
   module Discovery
     module Browser
-      def self.browse(timeout: 3)
-        ZeroConf.browse(SERVICE_TYPE, timeout:)
-                .filter_map { |r| parse_response(r) }
-                .uniq(&:name)
-      end
+      def self.browse(timeout: 3) = results_for(SERVICE_TYPE, timeout:)
 
       def self.find(name, timeout: 5)
         deadline = Time.now + timeout
@@ -24,10 +20,7 @@ module RobotLab
 
       def self.find_by_capability(capability, timeout: 3)
         label   = RobotLab::Discovery.dns_label(capability)
-        subtype = "_#{label}._sub.#{SERVICE_TYPE}"
-        ZeroConf.browse(subtype, timeout:)
-                .filter_map { |r| parse_response(r) }
-                .uniq(&:name)
+        results_for("_#{label}._sub.#{SERVICE_TYPE}", timeout:)
       end
 
       def self.list_capabilities(timeout: 3)
@@ -36,6 +29,15 @@ module RobotLab
           .uniq
           .sort
       end
+
+      # ZeroConf.browse returns nil instead of its message list when the
+      # timeout expires just as a packet arrives; treat that as no responses.
+      def self.results_for(service_type, timeout:)
+        (ZeroConf.browse(service_type, timeout:) || [])
+          .filter_map { |r| parse_response(r) }
+          .uniq(&:name)
+      end
+      private_class_method :results_for
 
       # :reek:TooManyStatements -- one scan over the DNS answers accumulating SRV/TXT fields; splitting would scatter the parse state.
       def self.parse_response(response)

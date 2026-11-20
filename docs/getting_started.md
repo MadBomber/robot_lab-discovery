@@ -4,7 +4,7 @@
 
 - Ruby 4.0.9+ (per the gemspec's `required_ruby_version`)
 - A multicast-capable network interface — standard on any LAN. `zeroconf` is pure Ruby and implements mDNS itself over standard UDP multicast sockets; it does not wrap Bonjour, Avahi, or any system mDNS daemon, so there is nothing else to install.
-- No dependency on core `robot_lab` — this gem works completely standalone. If `RobotLab` (core) happens to be loaded, `robot_lab-discovery` self-registers as an extension via `RobotLab.register_extension(:discovery, ...)`; if it isn't, nothing changes.
+- Core `robot_lab` (`~> 0.6`) is a declared gem dependency, so Bundler installs it alongside this gem. `require "robot_lab/discovery"` requires it for you and self-registers as an extension via `RobotLab.register_extension(:discovery, ...)`, whatever order you require things in.
 
 ## Installation
 
@@ -33,18 +33,18 @@ adv = RobotLab::Discovery::Advertiser.new(
   name:         "headline",              # mDNS instance name — no dots allowed
   port:         9292,
   path:         "/headline",             # stored in the TXT record
-  hostname:     Socket.gethostname,      # default; override for multi-homed hosts
+  hostname:     Socket.gethostname,      # default; advertised as "<hostname>.local"
   capabilities: ["writing", "research"]  # free-form taxonomy terms
 )
 
-adv.start   # begins advertising in a background thread
+adv.start   # begins advertising in a background thread; raises if the service fails to start
 # ... your server runs ...
 adv.stop    # sends an mDNS goodbye packet (TTL=0); removes it from peers' caches
 ```
 
-`start` spawns the actual `ZeroConf::Service` on a background `Thread` and returns `self` immediately — it does not block your server's main thread. `stop` joins that thread before returning, so it's safe to assume the service is fully torn down once `stop` returns.
+`start` spawns the actual `ZeroConf::Service` on a background `Thread`, waits (normally a few milliseconds, at most `timeout:` seconds — default 5) for it to send its announcement, and returns `self` — the service loop itself never blocks your server's main thread. If the service fails while starting (a socket error, say), `start` re-raises that error instead of leaving a dead thread behind. `stop` asks the service to exit and joins that thread with a bounded wait, killing it if it hasn't exited after `timeout:` seconds (default 5), so `stop` cannot hang and it's safe to assume the service is torn down once `stop` returns — even when called immediately after `start`.
 
-Capability strings are free-form — see [How It Works — Capability Taxonomy](how_it_works.md#capability-taxonomy) for the (light) conventions worth following. Each one is normalized into a valid DNS label (`"Web Search"` → `"web-search"`) and registered as a DNS-SD subtype, so peers can browse for it directly without scanning every robot on the network.
+Capability strings are free-form — see [How It Works — Capability Taxonomy](how_it_works.md#capability-taxonomy) for the (light) conventions worth following. Each one is normalized into a valid DNS label (`"Web Search"` → `"web-search"`) and registered as a DNS-SD subtype, so peers can browse for it directly without scanning every robot on the network. Two things are rejected by `Advertiser.new` with an `ArgumentError`: a capability containing a comma (the comma is the TXT-record separator) and one with no ASCII letter or digit (it would normalize to an empty label).
 
 ## Discovering Robots
 
@@ -108,7 +108,7 @@ Tests mock the `zeroconf` interactions (`ZeroConf.stub(:browse, ...)`) — no ac
 ## Key Constraints
 
 - **mDNS is LAN-only.** It works within a single multicast subnet — it does not cross routers, VPN tunnels, or cloud network boundaries. There is no equivalent of this gem for discovery across separate networks.
-- **`find` and `browse` can return stale results.** If a robot's process crashes without calling `Advertiser#stop`, its mDNS records are only removed once their TTL expires on peers' caches — there's no guaranteed instant removal in that failure path (only the graceful-shutdown goodbye packet from `stop` is instant).
+- **Other mDNS clients can hold stale records after a crash.** If a robot's process crashes without calling `Advertiser#stop`, no goodbye packet is sent, so caching mDNS stacks elsewhere on the LAN (Bonjour, Avahi, and tools built on them) keep its records until their TTL (60 seconds) expires. This gem's own `browse`/`find` keep no cache — each call sends a fresh query and returns only the robots that answer it — so a crashed robot simply stops appearing in their results.
 - **`find` polls in a blocking loop.** It repeatedly calls `browse` internally until the named robot appears or `timeout` elapses — see [How It Works — `find(name, timeout:)`](how_it_works.md#findname-timeout). Don't call it from a thread (a web request handler, an event loop) that needs to stay responsive.
-- **Capability content is capped.** All capabilities for one robot are joined into a single comma-separated TXT string capped at 253 bytes of content (`TxtRecord::MAX_CAPABILITIES_CONTENT`). Many short capability names comfortably fit; very long strings or a huge number of them will raise `RobotLab::Discovery::Error` at `Advertiser#start` (via `TxtRecord.encode`/`validate!`) — see [How It Works](how_it_works.md#the-txt-record-wire-format) for the exact limits.
-- **Instance names may not contain dots.** `name:` becomes the mDNS instance name; DNS-SD instance names are dot-separated internally (`name._robot-lab._tcp.local.`), so a `name:` containing a literal `.` will produce a malformed or ambiguous service name.
+- **Capability content is capped.** All capabilities for one robot are joined into a single comma-separated TXT string capped at 253 bytes of content (`TxtRecord::MAX_CAPABILITIES_CONTENT`). Many short capability names comfortably fit; very long strings or a huge number of them will raise `RobotLab::Discovery::Error` at `Advertiser#start` (via `TxtRecord.encode`/`validate_capabilities_content!`) — see [How It Works](how_it_works.md#the-txt-record-wire-format) for the exact limits.
+- **Instance names may not contain dots.** `name:` becomes the mDNS instance name; DNS-SD instance names are dot-separated internally (`name._robot-lab._tcp.local.`), so `zeroconf` rejects a `name:` containing a literal `.` — `Advertiser#start` raises `ArgumentError` ("instance_name must not contain dots"). `Advertiser.new` itself does not validate the name.

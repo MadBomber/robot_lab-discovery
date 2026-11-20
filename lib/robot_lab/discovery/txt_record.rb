@@ -30,9 +30,21 @@ module RobotLab
           "#{PATH_KEY}=#{path}",
           "#{VERSION_KEY}=#{VERSION}"
         ]
-        record << "#{CAPABILITIES_KEY}=#{Array(capabilities).join(",")}" unless Array(capabilities).empty?
+        content = Array(capabilities).join(",")
+        record << "#{CAPABILITIES_KEY}=#{validate_capabilities_content!(content)}" unless content.empty?
         validate!(record)
         record
+      end
+
+      # The comma-joined capability list shares one TXT string with its "c="
+      # key, so its content is capped at MAX_CAPABILITIES_CONTENT bytes.
+      def self.validate_capabilities_content!(content)
+        size = content.bytesize
+        return content unless size > MAX_CAPABILITIES_CONTENT
+
+        raise Error,
+              "capabilities exceed #{MAX_CAPABILITIES_CONTENT} bytes when comma-joined (#{size} bytes). " \
+              "Use fewer or shorter capability names."
       end
 
       def self.decode(strings)

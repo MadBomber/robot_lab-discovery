@@ -19,7 +19,7 @@ result = RobotLab::Discovery.find("headline", timeout: 5)
 result.url   # => "http://my-server.local:9292/headline"
 ```
 
-This gem augments `robot_lab-a2a` but has **no dependency on it, and no dependency on core `robot_lab` either** — its only runtime dependency is the pure-Ruby [`zeroconf`](https://rubygems.org/gems/zeroconf) gem. Discovery finds you a URL; you decide what protocol to speak to it (A2A, plain HTTP, anything else).
+This gem augments `robot_lab-a2a` but has **no dependency on it**. The gemspec declares two runtime dependencies — core `robot_lab` (`~> 0.6`) and the pure-Ruby [`zeroconf`](https://rubygems.org/gems/zeroconf) gem. `require "robot_lab/discovery"` loads core `robot_lab` only to register itself as an extension; the discovery code itself calls nothing but `zeroconf`. Discovery finds you a URL; you decide what protocol to speak to it (A2A, plain HTTP, anything else).
 
 ## Navigation
 
@@ -37,8 +37,8 @@ This gem augments `robot_lab-a2a` but has **no dependency on it, and no dependen
 | **Discover** | `RobotLab::Discovery.browse` / `.find` / `.find_by_capability` / `.list_capabilities` |
 | **Result** | `RobotLab::Discovery::Result` — `name`, `hostname`, `port`, `path`, `capabilities`, `#url` |
 | **Scope** | LAN-only — a single multicast subnet, not routable across the internet |
-| **Runtime dependency** | `zeroconf ~> 1.0` only |
-| **Optional integration** | Self-registers via `RobotLab.register_extension(:discovery, ...)` when core `robot_lab` is loaded — otherwise usable completely standalone |
+| **Runtime dependencies** | `robot_lab ~> 0.6`, `zeroconf ~> 1.3` |
+| **Core integration** | `require "robot_lab/discovery"` requires core `robot_lab` and self-registers via `RobotLab.register_extension(:discovery, ...)` |
 
 ## Relationship to Other RobotLab Gems
 
