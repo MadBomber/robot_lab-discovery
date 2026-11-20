@@ -57,7 +57,10 @@ advertisers = robots.map do |r|
     capabilities: r[:capabilities]
   )
   adv.start
-  puts "  [+] #{r[:name]} (#{r[:capabilities].join(", ")}) → #{adv.hostname}.local:#{ROBOT_PORT}#{r[:path]}"
+  # Socket.gethostname may or may not already end in ".local"; the service is
+  # always advertised as "<host>.local".
+  host = adv.hostname.sub(/\.local\.?\z/, "")
+  puts "  [+] #{r[:name]} (#{r[:capabilities].join(", ")}) → #{host}.local:#{ROBOT_PORT}#{r[:path]}"
   adv
 end
 

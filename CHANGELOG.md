@@ -1,5 +1,19 @@
 ## [Unreleased]
 
+### Changed
+
+- **`require "robot_lab/discovery"` now requires core `robot_lab`** and always registers the `:discovery` extension. Registration previously happened only when `robot_lab` had been required first.
+- **`Advertiser#start` waits for the service to announce** (up to `timeout:` seconds, default `Advertiser::START_TIMEOUT` = 5) and re-raises an error raised on the service thread while it was starting, instead of returning immediately and hiding the failure until `stop`. An error raised after startup is available from the new `Advertiser#error`.
+- **`Advertiser.new` validates capabilities** via the new `RobotLab::Discovery.validate_capabilities!`: a capability containing a comma, or with no ASCII letter or digit, raises `ArgumentError`.
+- **`TxtRecord.encode` enforces `MAX_CAPABILITIES_CONTENT`** through the new `TxtRecord.validate_capabilities_content!`; an over-long capability list now raises `RobotLab::Discovery::Error` with a message naming the 253-byte capability budget rather than the generic 255-byte string limit.
+- **Requires `zeroconf ~> 1.3`** (was `~> 1.0`). The `subtypes:` option this gem passes to `ZeroConf::Service` only exists from zeroconf 1.3.0, so older 1.x releases failed at `Advertiser#start`.
+
+### Fixed
+
+- `Advertiser#stop` no longer hangs when called immediately after `#start`. The join is bounded (`timeout:`, default `Advertiser::STOP_TIMEOUT` = 5) and a service thread that does not exit is killed.
+- `Browser.browse` and `Browser.find_by_capability` return `[]` instead of raising `NoMethodError` when `ZeroConf.browse` returns `nil`.
+- `examples/01_basic_usage.rb` no longer prints a doubled `.local.local` suffix on hosts whose hostname already ends in `.local`.
+
 ## [0.6.1] - 2026-11-19
 
 ### Changed

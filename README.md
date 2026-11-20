@@ -15,8 +15,9 @@ ZeroConf::Service                       ZeroConf.browse("_robot-lab._tcp.local."
   instance:     "headline"                → parse SRV + TXT
   host:         my-server.local           → Result(name, hostname, port, path,
   port:         9292                                capabilities, url)
-  TXT:          path=/headline
-                capabilities=writing,research
+  TXT:          p=/headline
+                v=0.6.1
+                c=writing,research
   subtypes:     _writing._sub._robot-lab._tcp.local.
                 _research._sub._robot-lab._tcp.local.
 
@@ -55,14 +56,16 @@ adv = RobotLab::Discovery::Advertiser.new(
   capabilities: ["writing", "research"]  # free-form taxonomy terms
 )
 
-adv.start   # begins advertising in a background thread
+adv.start   # begins advertising in a background thread; raises if the service fails to start
 # ... server runs ...
 adv.stop    # sends mDNS goodbye packet; removes from peers' caches
 ```
 
 Capability strings are free-form. They are normalised into valid DNS labels
 (`"Web Search"` → `"web-search"`) and registered as DNS-SD subtypes, so peers
-can browse for them directly.
+can browse for them directly. A capability may not contain a comma and must
+contain at least one ASCII letter or digit — `Advertiser.new` raises
+`ArgumentError` otherwise.
 
 ### Discovering robots
 
@@ -155,8 +158,9 @@ lib/robot_lab/discovery/
 ```
 
 `RobotLab::Discovery` module exposes `browse`, `find`, `find_by_capability`, and
-`list_capabilities` as class methods. If `RobotLab` is loaded, the gem
-self-registers as an extension via `RobotLab.register_extension(:discovery, ...)`.
+`list_capabilities` as class methods. Loading `robot_lab/discovery` requires
+core `robot_lab` and self-registers as an extension via
+`RobotLab.register_extension(:discovery, ...)`.
 
 ## Relationship to other robot_lab gems
 

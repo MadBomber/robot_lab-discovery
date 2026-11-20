@@ -157,4 +157,28 @@ class TestBrowser < Minitest::Test
       assert_equal [], RobotLab::Discovery::Browser.list_capabilities
     end
   end
+
+  # Regression: ZeroConf::Client#run returns nil (not its message list) when
+  # the timeout expires just as a packet is received.
+  def test_browse_returns_empty_array_when_zeroconf_returns_nil
+    ZeroConf.stub(:browse, nil) do
+      assert_equal [], RobotLab::Discovery::Browser.browse
+    end
+  end
+
+  def test_find_by_capability_returns_empty_array_when_zeroconf_returns_nil
+    ZeroConf.stub(:browse, nil) do
+      assert_equal [], RobotLab::Discovery::Browser.find_by_capability("research")
+    end
+  end
+
+  def test_list_capabilities_empty_when_zeroconf_returns_nil
+    ZeroConf.stub(:browse, nil) do
+      assert_equal [], RobotLab::Discovery::Browser.list_capabilities
+    end
+  end
+
+  def test_results_for_is_private
+    refute_respond_to RobotLab::Discovery::Browser, :results_for
+  end
 end

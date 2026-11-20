@@ -64,4 +64,41 @@ class TestDiscovery < Minitest::Test
   def test_dns_label_strips_leading_trailing_hyphens
     assert_equal "foo", RobotLab::Discovery.dns_label("-foo-")
   end
+
+  # Regression: registration used to happen only when robot_lab had been
+  # required first. test_helper requires only "robot_lab/discovery".
+  def test_registers_as_robot_lab_extension_without_requiring_core_first
+    assert RobotLab.extension_loaded?(:discovery)
+    assert_same RobotLab::Discovery, RobotLab.extension(:discovery)
+  end
+
+  def test_validate_capabilities_returns_strings
+    assert_equal %w[research writing], RobotLab::Discovery.validate_capabilities!(%i[research writing])
+  end
+
+  def test_validate_capabilities_accepts_single_value_and_nil
+    assert_equal ["Web Search"], RobotLab::Discovery.validate_capabilities!("Web Search")
+    assert_equal [], RobotLab::Discovery.validate_capabilities!(nil)
+  end
+
+  def test_validate_capabilities_rejects_comma
+    err = assert_raises(ArgumentError) { RobotLab::Discovery.validate_capabilities!(["writing,research"]) }
+    assert_match(/"writing,research" must not contain a comma/, err.message)
+  end
+
+  def test_validate_capabilities_rejects_empty_string
+    assert_raises(ArgumentError) { RobotLab::Discovery.validate_capabilities!([""]) }
+  end
+
+  def test_validate_capabilities_rejects_label_with_no_ascii_alphanumerics
+    err = assert_raises(ArgumentError) { RobotLab::Discovery.validate_capabilities!(["--"]) }
+    assert_match(/at least one ASCII letter or digit/, err.message)
+  end
+
+  # Regression: the example printed "<host>.local.local" on machines whose
+  # hostname already ends in ".local".
+  def test_basic_usage_example_does_not_double_local_suffix
+    source = File.read(File.expand_path("../../examples/01_basic_usage.rb", __dir__))
+    refute_match(/hostname\}\.local/, source)
+  end
 end

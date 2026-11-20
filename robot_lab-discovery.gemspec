@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "robot_lab", "~> 0.6"
-  spec.add_dependency "zeroconf", "~> 1.0"
+  spec.add_dependency "zeroconf", "~> 1.3"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://guides.rubygems.org/make-your-own-gem/
