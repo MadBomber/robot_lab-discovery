@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
                      "on a local network using multicast DNS (mDNS/Bonjour/Avahi) via the zeroconf gem."
   spec.homepage = "https://github.com/MadBomber/robot_lab-discovery"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 4.0"
+  spec.required_ruby_version = ">= 4.0.9"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "robot_lab", "~> 0.3.0"
+  spec.add_dependency "robot_lab", "~> 0.6"
   spec.add_dependency "zeroconf", "~> 1.0"
 
   # For more information and examples about making a new gem, check out our
