@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1050,13 +1050,13 @@
 <p>Given a raw <code>Resolv::DNS::Message</code>-like response, walks <code>response.answer + response.additional</code> looking for an <code>SRV</code> record (supplies <code>port</code>, <code>hostname</code> — with the trailing <code>.</code> FQDN dot stripped — and the instance name, taken from the first label of the resource name) and a <code>TXT</code> record (decoded via <code>TxtRecord.decode</code>). If either the SRV data or a <code>path</code> from the TXT data is missing, it returns <code>nil</code> rather than raising — a malformed or partial mDNS response is simply skipped, not an error condition, which is why <code>browse</code> uses <code>filter_map</code> rather than <code>map</code>.</p>
 <h2 id="robotlabdiscoveryresult"><code>RobotLab::Discovery::Result</code><a class="headerlink" href="#robotlabdiscoveryresult" title="Permanent link">&para;</a></h2>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Data</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:hostname</span><span class="p">,</span><span class="w"> </span><span class="ss">:port</span><span class="p">,</span><span class="w"> </span><span class="ss">:path</span><span class="p">,</span><span class="w"> </span><span class="ss">:capabilities</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http://</span><span class="si">#{</span><span class="n">hostname</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">port</span><span class="si">}#{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://</span><span class="si">#{</span><span class="n">hostname</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">port</span><span class="si">}#{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">end</span>
 </span></code></pre></div>
 <p>An immutable value object (Ruby's <code>Data.define</code>, not a mutable <code>Struct</code> or hash) — every <code>Result</code> a <code>browse</code>/<code>find</code>/<code>find_by_capability</code> call returns is a fresh, frozen snapshot; there's no way to accidentally mutate one and have it silently affect a cache. <code>url</code> always assumes plain <code>http://</code> — this gem has no notion of TLS and doesn't encode a scheme in the TXT record; if a robot actually serves over HTTPS, build the URL yourself from the other fields rather than using <code>#url</code> directly.</p>
 <h2 id="dns_label"><code>dns_label</code><a class="headerlink" href="#dns_label" title="Permanent link">&para;</a></h2>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">dns_label</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="n">capability</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^a-z0-9]+/</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\A-+|-+\z/</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="n">capability</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^a-z0-9]+/</span><span class="p">,</span><span class="w"> </span><span class="s2">"-"</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\A-+|-+\z/</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">end</span>
 </span></code></pre></div>
 <p>Downcases, collapses every run of non-alphanumeric characters to a single hyphen, then strips any leading/trailing hyphen left over. <code>"Web Search"</code> → <code>"web-search"</code>; <code>"NLP/Analysis"</code> → <code>"nlp-analysis"</code>; <code>"Web Search / NLP"</code> → <code>"web-search-nlp"</code> (the <code>/</code> and surrounding spaces all collapse into the hyphens already produced by the spaces around them). This is what turns a free-form capability string into something legal to use as a DNS label component in a subtype name — DNS labels can't contain arbitrary punctuation, spaces, or mixed case in a way every resolver treats consistently.</p>
@@ -1194,10 +1194,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
