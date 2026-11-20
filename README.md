@@ -38,7 +38,7 @@ gem "robot_lab-discovery"
 
 ### System prerequisites
 
-None beyond Ruby >= 3.2. The `zeroconf` gem is pure Ruby and implements mDNS itself using standard UDP multicast sockets — it does not wrap Bonjour, Avahi, or any system mDNS daemon. A multicast-capable network interface is all that is required, which is standard on any LAN.
+None beyond Ruby >= 4.0.9. The `zeroconf` gem is pure Ruby and implements mDNS itself using standard UDP multicast sockets — it does not wrap Bonjour, Avahi, or any system mDNS daemon. A multicast-capable network interface is all that is required, which is standard on any LAN.
 
 ## Usage
 
